@@ -14,6 +14,7 @@
 @property (nonatomic, weak) IBOutlet UILabel *lblConfigResult;
 @property (nonatomic, weak) IBOutlet UITextField *tfInterval;
 @property (nonatomic, weak) IBOutlet UITextField *tfDuty;
+@property (nonatomic, weak) IBOutlet UITextField *tfBatteryStop;
 @property (nonatomic, weak) IBOutlet UIButton *btnStartStop;
 
 @end

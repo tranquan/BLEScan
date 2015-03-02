@@ -60,8 +60,12 @@ static BLEHandler *CentralHandler;
 static NSDateFormatter *DateFormatter;
 
 // globals vars
+float _interval;
+float _dutyPercent;
 float _dutyTime;
 float _sleepTime;
+float _batteryDropToStop;
+float _batteryAtStart;
 float _currBatteryLevel;
 float _prevBatteryLevel;
 
@@ -103,6 +107,7 @@ NSString *_logFilePath;
   [messagingCenter runServerOnCurrentThread];
   [messagingCenter registerForMessageName:@"start_scan" target:self selector:@selector(handleMessageName:withUserInfo:)];
   [messagingCenter registerForMessageName:@"stop_scan" target:self selector:@selector(handleMessageName:withUserInfo:)];
+  [messagingCenter registerForMessageName:@"get_state" target:self selector:@selector(handleMessageNameAndReply:withUserInfo:)];
 
   if (CentralHandler == nil) {
   	CentralHandler = [[BLEHandler alloc] init];
@@ -112,22 +117,28 @@ NSString *_logFilePath;
 		CentralManager = [[CBCentralManager alloc] initWithDelegate:CentralHandler queue:nil];
 	}
 
-	// NSThread *thread = [[NSThread alloc] initWithTarget:self selector:@selector(myBluetoothScanThread) object:nil];
-	// [thread start];
-
   %orig;
 }
 
 %new
 - (void)handleMessageName:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
 	@autoreleasepool {
+
 		if ([name isEqualToString:@"start_scan"]) {
 			
 			_isRunning = 1;
+			_interval = [[userInfo objectForKey:@"interval"] floatValue];
+			_dutyPercent = [[userInfo objectForKey:@"duty_percent"] floatValue];
+			_batteryDropToStop = [[userInfo objectForKey:@"battery_stop"] floatValue];
 			_dutyTime = [[userInfo objectForKey:@"duty_time"] floatValue];
 			_sleepTime = [[userInfo objectForKey:@"sleep_time"] floatValue];
 			[_startTime release];
 			_startTime = [[NSDate date] retain];
+
+			CGFloat battery = [[UIDevice currentDevice] batteryLevel] * 100;
+			_batteryAtStart = battery;
+			_currBatteryLevel = battery;
+			_prevBatteryLevel = battery + 1.0;
 
 			[self myChangeThermalColor:BLESCAN_THERMAL_ORANGE];
 			[self myOpenLogFile];
@@ -135,12 +146,13 @@ NSString *_logFilePath;
 
 			return;
 		}
+
 		if ([name isEqualToString:@"stop_scan"]) {
 
 			_isRunning = 0;
 			[_stopTime release];
 			_stopTime = [[NSDate date] retain];
-			
+
 			[self myChangeThermalColor:BLESCAN_THERMAL_RED];
 			[self myCloseLogFile];
 			[CentralManager stopScan]; 
@@ -150,32 +162,21 @@ NSString *_logFilePath;
 	}
 }
 
-// ----- main thread for doing bluetooth scan -----
-
-// %new
-// - (void)myBluetoothScanThread {
-
-// 	static NSDateFormatter *formatter = nil;
-// if (formatter == nil) {
-// 	formatter = [[NSDateFormatter alloc] init];
-// 	[formatter setDateFormat:@"dd/MM/yyyy hh:mm:ss"];
-// }
-
-// 	while (true) {
-// 		NSString *curtime = [formatter stringFromDate:[NSDate date]];
-// 		CGFloat battery = [[UIDevice currentDevice] batteryLevel] * 100;
-
-// 		DLog(@"start bluetooth scan at time: %@ with battery level: %f", curtime, battery);
-// 		[self myChangeThermalColor:BLESCAN_THERMAL_YELLOW];
-// 		[centralManager scanForPeripheralsWithServices:nil options:nil];
-// 		sleep(BLESCAN_INTERVAL);
-
-// 		DLog(@"stop bluetooth scan");
-// 		[self myChangeThermalColor:BLESCAN_THERMAL_ORANGE];
-// 		[centralManager stopScan];
-// 		sleep(BLESCAN_INTERVAL);
-// 	}
-// }
+%new
+- (NSDictionary *)handleMessageNameAndReply:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
+	@autoreleasepool {
+		if ([name isEqualToString:@"get_state"]) {
+			NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:
+				[NSNumber numberWithFloat:_dutyTime], @"duty_time",
+				[NSNumber numberWithFloat:_sleepTime], @"sleep_time",
+				[NSNumber numberWithFloat:_batteryDropToStop], @"battery_stop",
+        [NSNumber numberWithInt:_isRunning], @"is_running", nil];
+			[info retain];
+			return info;
+		}
+		return nil;
+	}
+}
 
 %new 
 - (void)myBLEStartScan {
@@ -191,15 +192,37 @@ NSString *_logFilePath;
 
 		NSString *curtime = [DateFormatter stringFromDate:[NSDate date]];
 		CGFloat battery = [[UIDevice currentDevice] batteryLevel] * 100;
-		_prevBatteryLevel = _currBatteryLevel;
-		_currBatteryLevel = battery;
-		NSString *logText = [NSString stringWithFormat:@"%@, %.2f", curtime, _currBatteryLevel];
-		[self myWriteLogToFile:logText];
 
+		// check if battery drop enough to stop
+		if (fabs(_batteryAtStart - battery) >= _batteryDropToStop) {
+			_isRunning = 0;
+			[_stopTime release];
+			_stopTime = [[NSDate date] retain];
+
+			[self myChangeThermalColor:BLESCAN_THERMAL_RED];
+			[self myCloseLogFile];
+			[CentralManager stopScan]; 
+			return;
+		}
+
+		// log scan time
+		_currBatteryLevel = battery;
+		if (fabsf(_prevBatteryLevel - _currBatteryLevel) >= 1.0) {
+			_prevBatteryLevel = _currBatteryLevel;
+			NSString *logText = [NSString stringWithFormat:@"%@, %.2f\n", curtime, _currBatteryLevel];
+			[self myWriteLogToFile:logText];
+		}
+
+		// update UI 
 		DLog(@"start bluetooth scan at time: %@ with battery level: %f", curtime, battery);
-		[self myChangeThermalColor:BLESCAN_THERMAL_YELLOW];
+		if (_dutyTime > 1.0 && _sleepTime > 1.0) {
+			[self myChangeThermalColor:BLESCAN_THERMAL_YELLOW];
+		}
+
+		// do scan
 		[CentralManager scanForPeripheralsWithServices:nil options:nil];
 
+		// pending stop
 		if (_stopPendings == 0) {
 			_stopPendings++;
 			[self performSelector:@selector(myBLEStopScan) withObject:nil afterDelay:_dutyTime]; 
@@ -219,9 +242,10 @@ NSString *_logFilePath;
 
 	@autoreleasepool {
 
-		// _isScanning = 0;
   	DLog(@"stop bluetooth scan");
-		[self myChangeThermalColor:BLESCAN_THERMAL_ORANGE];
+  	if (_dutyTime > 1.0 && _sleepTime > 1.0) {
+			[self myChangeThermalColor:BLESCAN_THERMAL_ORANGE];
+		}
 		[CentralManager stopScan]; 
 
 		if (_startPendings == 0) {
@@ -234,8 +258,6 @@ NSString *_logFilePath;
 %new 
 - (void)myOpenLogFile {
 	@autoreleasepool {
-		[_logFilePath release];
-		_logFilePath = [NSString stringWithFormat:@"/tmp/blescan/"];
 
 		BOOL isDir = NO;
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:@"/tmp/blescan" isDirectory:&isDir];
@@ -243,13 +265,14 @@ NSString *_logFilePath;
         [[NSFileManager defaultManager] createDirectoryAtPath:@"/tmp/blescan" 
         	withIntermediateDirectories:NO attributes:nil error:nil];
     }
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    NSDateFormatter *formatter = [[[NSDateFormatter alloc] init] autorelease];
     [formatter setDateFormat:@"dd-MM-yyyy.hh-mm-ss"];
     [_logFilePath release];
     _logFilePath = [NSString stringWithFormat:@"/tmp/blescan/%@", [formatter stringFromDate:[NSDate date]]];
     [_logFilePath retain];
 
-    NSString *content = [NSString stringWithFormat:@"start log ----\n"];
+    NSString *curtime = [DateFormatter stringFromDate:[NSDate date]];
+    NSString *content = [NSString stringWithFormat:@"start log at %@ ----\nbattery: %.2f battery stop: %.2f\ninterval: %.2f s duty_percent: %.2f %%\nscan_time: %.2f s sleep_time: %.2f s\n-----\n", curtime, _batteryAtStart, _batteryDropToStop, _interval, _dutyPercent, _dutyTime, _sleepTime];
     if ([[NSFileManager defaultManager] fileExistsAtPath:_logFilePath] == NO) {
         [[NSFileManager defaultManager] createFileAtPath:_logFilePath contents:
         	[content dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
@@ -261,9 +284,11 @@ NSString *_logFilePath;
 - (void)myWriteLogToFile:(NSString *)logText {
 	@autoreleasepool {
     NSFileHandle *file = [NSFileHandle fileHandleForUpdatingAtPath:_logFilePath];
-    [file seekToEndOfFile];
-    [file writeData:[logText dataUsingEncoding:NSUTF8StringEncoding]];
-    [file closeFile];
+    if (file) {
+    	[file seekToEndOfFile];
+    	[file writeData:[logText dataUsingEncoding:NSUTF8StringEncoding]];
+    	[file closeFile];
+  	}
 	}
 }
 
@@ -271,9 +296,14 @@ NSString *_logFilePath;
 - (void)myCloseLogFile {
 	@autoreleasepool {
 		NSFileHandle *file = [NSFileHandle fileHandleForUpdatingAtPath:_logFilePath];
-    [file seekToEndOfFile];
-    [file writeData:[@"end log ----" dataUsingEncoding:NSUTF8StringEncoding]];
-    [file closeFile];
+		if (file) {
+			NSString *curtime = [DateFormatter stringFromDate:[NSDate date]];
+			CGFloat battery = [[UIDevice currentDevice] batteryLevel] * 100;
+			NSString *content = [NSString stringWithFormat:@"end log at %@ -----\nbatter: %.2f\n", curtime, battery];
+    	[file seekToEndOfFile];
+    	[file writeData:[content dataUsingEncoding:NSUTF8StringEncoding]];
+    	[file closeFile];
+  	}
 	}
 }
 

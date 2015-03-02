@@ -15,6 +15,7 @@
     int _isRunning;
     float _interval;
     float _duty;
+    float _batteryDropToStop;
     float _dutyTime;
     float _sleepTime;
     NSTimer *_updateTimer;
@@ -64,7 +65,8 @@
             
             _dutyTime = [[info objectForKey:@"duty_time"] floatValue];
             _sleepTime = [[info objectForKey:@"sleep_time"] floatValue];
-            self.lblConfigResult.text = [NSString stringWithFormat:@"Config: scan %.2f s, sleep %.2f s", _dutyTime, _sleepTime];
+            _batteryDropToStop = [[info objectForKey:@"battery_stop"] floatValue];
+            self.lblConfigResult.text = [NSString stringWithFormat:@"config: scan %.2f s, sleep %.2f s \nbattery stop: %.2f %%", _dutyTime, _sleepTime, _batteryDropToStop];
         }
     }
 }
@@ -104,6 +106,7 @@
         _isRunning = 1;
         _interval = [self.tfInterval.text floatValue];
         _duty = [self.tfDuty.text floatValue];
+        _batteryDropToStop = [self.tfBatteryStop.text floatValue];
         _dutyTime = (_duty / 100.0) * _interval;
         _sleepTime = _interval - _dutyTime;
         
@@ -115,7 +118,10 @@
         [self.tfInterval resignFirstResponder];
         [self.tfDuty resignFirstResponder];
         
-        [self sendToBackgroundMessage:@"start_scan" withUserInfo:@{@"duty_time" : @(_dutyTime),
+        [self sendToBackgroundMessage:@"start_scan" withUserInfo:@{@"interval" : @(_interval),
+                                                                   @"duty_percent" : @(_duty),
+                                                                   @"battery_stop" : @(_batteryDropToStop),
+                                                                   @"duty_time" : @(_dutyTime),
                                                                    @"sleep_time" : @(_sleepTime)}];
         [self.btnStartStop setTitle:@"Stop" forState:UIControlStateNormal];
     } else {
@@ -143,17 +149,23 @@
     if (textField == self.tfDuty) {
         _duty = [self.tfDuty.text floatValue];
     }
+    if (textField == self.tfBatteryStop) {
+        _batteryDropToStop = [self.tfBatteryStop.text floatValue];
+    }
     _dutyTime = (_duty / 100.0) * _interval;
     _sleepTime = _interval - _dutyTime;
-    self.lblConfigResult.text = [NSString stringWithFormat:@"Config: scan %.2f s, sleep %.2f s", _dutyTime, _sleepTime];
+    self.lblConfigResult.text = [NSString stringWithFormat:@"Config: scan %.2f s, sleep %.2f s \nbattery stop: %.2f %%", _dutyTime, _sleepTime, _batteryDropToStop];
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     if ([string hasSuffix:@"\n"]) {
         if (textField == self.tfInterval) {
             [self.tfDuty becomeFirstResponder];
-        } else {
-            [textField resignFirstResponder];
+        } else if (textField == self.tfDuty) {
+            [self.tfBatteryStop becomeFirstResponder];
+        }
+        else {
+            [self.tfBatteryStop resignFirstResponder];
         }
         return NO;
     }
