@@ -50,6 +50,7 @@
     // update battery state
     _updateTimer = [NSTimer timerWithTimeInterval:2 target:self selector:@selector(updateBatteryLevel:) userInfo:nil repeats:YES];
     [_updateTimer fire];
+    [self updateBatteryLevel:nil];
     
     // update scanning state
     if (_messagingCenter) {
@@ -117,6 +118,7 @@
         
         [self.tfInterval resignFirstResponder];
         [self.tfDuty resignFirstResponder];
+        [self.tfBatteryStop resignFirstResponder];
         
         [self sendToBackgroundMessage:@"start_scan" withUserInfo:@{@"interval" : @(_interval),
                                                                    @"duty_percent" : @(_duty),
@@ -126,6 +128,11 @@
         [self.btnStartStop setTitle:@"Stop" forState:UIControlStateNormal];
     } else {
         _isRunning = 0;
+        
+        [self.tfInterval resignFirstResponder];
+        [self.tfDuty resignFirstResponder];
+        [self.tfBatteryStop resignFirstResponder];
+        
         [self sendToBackgroundMessage:@"stop_scan" withUserInfo:nil];
         [self.btnStartStop setTitle:@"Start" forState:UIControlStateNormal];
     }

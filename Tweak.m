@@ -117,6 +117,8 @@ NSString *_logFilePath;
 		CentralManager = [[CBCentralManager alloc] initWithDelegate:CentralHandler queue:nil];
 	}
 
+	[[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
+
   %orig;
 }
 
@@ -272,7 +274,7 @@ NSString *_logFilePath;
     [_logFilePath retain];
 
     NSString *curtime = [DateFormatter stringFromDate:[NSDate date]];
-    NSString *content = [NSString stringWithFormat:@"start log at %@ ----\nbattery: %.2f battery stop: %.2f\ninterval: %.2f s duty_percent: %.2f %%\nscan_time: %.2f s sleep_time: %.2f s\n-----\n", curtime, _batteryAtStart, _batteryDropToStop, _interval, _dutyPercent, _dutyTime, _sleepTime];
+    NSString *content = [NSString stringWithFormat:@"start log at %@ ----\nbattery: %.2f battery stop: %.2f\ninterval: %.2f s duty_percent: %.2f %%\nscan_time: %.2f s sleep_time: %.2f s\n-----\n\n", curtime, _batteryAtStart, _batteryDropToStop, _interval, _dutyPercent, _dutyTime, _sleepTime];
     if ([[NSFileManager defaultManager] fileExistsAtPath:_logFilePath] == NO) {
         [[NSFileManager defaultManager] createFileAtPath:_logFilePath contents:
         	[content dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
@@ -297,9 +299,12 @@ NSString *_logFilePath;
 	@autoreleasepool {
 		NSFileHandle *file = [NSFileHandle fileHandleForUpdatingAtPath:_logFilePath];
 		if (file) {
-			NSString *curtime = [DateFormatter stringFromDate:[NSDate date]];
+			[_stopTime release];
+			_stopTime = [[NSDate date] retain];
+			NSString *curtime = [DateFormatter stringFromDate:_stopTime];
+			float durations = (float)([_stopTime timeIntervalSince1970] - [_startTime timeIntervalSince1970]);
 			CGFloat battery = [[UIDevice currentDevice] batteryLevel] * 100;
-			NSString *content = [NSString stringWithFormat:@"end log at %@ -----\nbatter: %.2f\n", curtime, battery];
+			NSString *content = [NSString stringWithFormat:@"\nend log at %@ -----\nbattery: %.2f durations: %.2f s\n", curtime, battery, durations];
     	[file seekToEndOfFile];
     	[file writeData:[content dataUsingEncoding:NSUTF8StringEncoding]];
     	[file closeFile];
