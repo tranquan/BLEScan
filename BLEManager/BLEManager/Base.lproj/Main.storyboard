@@ -249,8 +249,17 @@
                                 <color key="textColor" red="0.14117647059999999" green="0.62352941179999999" blue="0.90588235289999997" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="stop" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jZo-db-mfh">
+                                <rect key="frame" x="16" y="37" width="288" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="0bf-Tz-DMy"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.17787677777631578" green="0.64912482264210525" blue="0.84158967036842103" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NCJ-gJ-6cd">
-                                <rect key="frame" x="80" y="278" width="160" height="36"/>
+                                <rect key="frame" x="80" y="512" width="160" height="36"/>
                                 <color key="backgroundColor" red="1" green="0.42482000930000002" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="36" id="Amg-GJ-DAT"/>
@@ -261,13 +270,61 @@
                                     <action selector="btnStartStopTapped:" destination="o7g-dH-4hx" eventType="touchUpInside" id="AhR-rH-15Q"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="scanning..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jZo-db-mfh">
-                                <rect key="frame" x="16" y="37" width="288" height="21"/>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="aEY-4Q-SHe">
+                                <rect key="frame" x="26" y="278" width="51" height="31"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="21" id="0bf-Tz-DMy"/>
+                                    <constraint firstAttribute="height" constant="31" id="9PE-vb-LQg"/>
+                                    <constraint firstAttribute="width" constant="49" id="TDZ-sw-XZ7"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="switchingScanWholeInterval:" destination="o7g-dH-4hx" eventType="valueChanged" id="oRT-4q-z0H"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scan 100% Interval" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XPr-W3-08u">
+                                <rect key="frame" x="87" y="283" width="203" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="GFT-Mr-PQ2"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.17787677777631578" green="0.64912482264210525" blue="0.84158967036842103" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eo7-pe-dIG">
+                                <rect key="frame" x="26" y="319" width="51" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="aCF-3m-YPX"/>
+                                    <constraint firstAttribute="width" constant="49" id="e2q-dJ-I63"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="switchingScanBeaconsMode:" destination="o7g-dH-4hx" eventType="valueChanged" id="5uO-3q-i2T"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Detect Beacons" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zsr-rV-kap">
+                                <rect key="frame" x="87" y="324" width="203" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="Itj-Yo-4vB"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4BY-DK-mAq">
+                                <rect key="frame" x="26" y="358" width="51" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="Mlo-lz-hgJ"/>
+                                    <constraint firstAttribute="width" constant="49" id="qB0-7R-SPW"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="switchingScanDuplicateBeacons:" destination="o7g-dH-4hx" eventType="valueChanged" id="ZH5-dl-GMk"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scan Duplicates Beacon" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lJh-of-EKh">
+                                <rect key="frame" x="87" y="363" width="217" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="wU9-2c-uPq"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -275,39 +332,66 @@
                         <constraints>
                             <constraint firstItem="hYt-kX-HtG" firstAttribute="leading" secondItem="gp3-HF-G5H" secondAttribute="trailing" constant="8" id="0xh-iC-BZB"/>
                             <constraint firstItem="hYt-kX-HtG" firstAttribute="top" secondItem="YoP-FA-UYx" secondAttribute="bottom" constant="23" id="16w-fv-ZGU"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="XPr-W3-08u" secondAttribute="trailing" constant="14" id="1is-Zc-Sh0"/>
+                            <constraint firstItem="4BY-DK-mAq" firstAttribute="leading" secondItem="elJ-LV-DV7" secondAttribute="leadingMargin" constant="10" id="8RO-8k-h9R"/>
+                            <constraint firstItem="eo7-pe-dIG" firstAttribute="leading" secondItem="elJ-LV-DV7" secondAttribute="leadingMargin" constant="10" id="9sF-AO-vCl"/>
                             <constraint firstItem="NCJ-gJ-6cd" firstAttribute="leading" secondItem="elJ-LV-DV7" secondAttribute="leadingMargin" constant="64" id="ACu-DY-GBW"/>
                             <constraint firstAttribute="trailing" secondItem="jZo-db-mfh" secondAttribute="trailing" constant="16" id="AWM-jn-DSY"/>
+                            <constraint firstItem="XPr-W3-08u" firstAttribute="top" secondItem="cTg-Ig-afH" secondAttribute="bottom" constant="13" id="AYc-HT-8qj"/>
                             <constraint firstAttribute="trailingMargin" secondItem="NCJ-gJ-6cd" secondAttribute="trailing" constant="64" id="BRP-11-O6D"/>
                             <constraint firstItem="YoP-FA-UYx" firstAttribute="leading" secondItem="elJ-LV-DV7" secondAttribute="leadingMargin" id="E8C-j8-cpB"/>
                             <constraint firstItem="gp3-HF-G5H" firstAttribute="top" secondItem="YoP-FA-UYx" secondAttribute="bottom" constant="27" id="EGC-wO-8Pf"/>
                             <constraint firstItem="gp3-HF-G5H" firstAttribute="leading" secondItem="elJ-LV-DV7" secondAttribute="leadingMargin" constant="10" id="EOW-Rm-K5G"/>
+                            <constraint firstItem="eo7-pe-dIG" firstAttribute="top" secondItem="aEY-4Q-SHe" secondAttribute="bottom" constant="10" id="Evv-ej-JnZ"/>
+                            <constraint firstItem="4BY-DK-mAq" firstAttribute="top" secondItem="eo7-pe-dIG" secondAttribute="bottom" constant="8" id="Fqp-Zz-TdD"/>
                             <constraint firstItem="HNL-DV-uOk" firstAttribute="top" secondItem="wex-sJ-rGs" secondAttribute="bottom" constant="17" id="HoY-Ho-Huj"/>
+                            <constraint firstItem="Zsr-rV-kap" firstAttribute="top" secondItem="XPr-W3-08u" secondAttribute="bottom" constant="20" id="IM9-5I-85N"/>
                             <constraint firstItem="jZo-db-mfh" firstAttribute="top" secondItem="BdV-ro-1Tk" secondAttribute="bottom" constant="17" id="JF9-RX-rkC"/>
                             <constraint firstItem="p7p-4O-Gtr" firstAttribute="leading" secondItem="HNL-DV-uOk" secondAttribute="trailing" constant="8" id="JGy-iQ-uV3"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Zsr-rV-kap" secondAttribute="trailing" constant="14" id="Lpu-ct-JxV"/>
                             <constraint firstItem="cTg-Ig-afH" firstAttribute="trailing" secondItem="elJ-LV-DV7" secondAttribute="trailingMargin" id="MHO-1b-HZb"/>
+                            <constraint firstItem="aEY-4Q-SHe" firstAttribute="top" secondItem="cTg-Ig-afH" secondAttribute="bottom" constant="8" id="MRB-ht-DWi"/>
                             <constraint firstItem="HTE-nS-uqd" firstAttribute="leading" secondItem="wex-sJ-rGs" secondAttribute="trailing" constant="8" id="PW6-P2-J1H"/>
+                            <constraint firstItem="lJh-of-EKh" firstAttribute="trailing" secondItem="elJ-LV-DV7" secondAttribute="trailingMargin" id="QYq-L7-i7i"/>
                             <constraint firstAttribute="trailingMargin" secondItem="HTE-nS-uqd" secondAttribute="trailing" constant="14" id="Ui1-PP-8u9"/>
                             <constraint firstItem="cTg-Ig-afH" firstAttribute="leading" secondItem="elJ-LV-DV7" secondAttribute="leadingMargin" id="ZCg-eA-jGD"/>
+                            <constraint firstItem="1sl-cW-dmS" firstAttribute="top" secondItem="NCJ-gJ-6cd" secondAttribute="bottom" constant="20" id="ZLd-nM-rvG"/>
                             <constraint firstAttribute="trailingMargin" secondItem="p7p-4O-Gtr" secondAttribute="trailing" constant="14" id="cgb-0B-Z2r"/>
                             <constraint firstAttribute="trailingMargin" secondItem="hYt-kX-HtG" secondAttribute="trailing" constant="14" id="dTZ-JB-77s"/>
+                            <constraint firstItem="Zsr-rV-kap" firstAttribute="leading" secondItem="eo7-pe-dIG" secondAttribute="trailing" constant="12" id="fBD-4q-J5k"/>
                             <constraint firstItem="YoP-FA-UYx" firstAttribute="trailing" secondItem="elJ-LV-DV7" secondAttribute="trailingMargin" id="fCz-CF-xSp"/>
                             <constraint firstItem="wex-sJ-rGs" firstAttribute="top" secondItem="gp3-HF-G5H" secondAttribute="bottom" constant="17" id="fOP-h8-jRm"/>
+                            <constraint firstItem="aEY-4Q-SHe" firstAttribute="leading" secondItem="elJ-LV-DV7" secondAttribute="leadingMargin" constant="10" id="gNK-gq-VZZ"/>
+                            <constraint firstItem="XPr-W3-08u" firstAttribute="leading" secondItem="aEY-4Q-SHe" secondAttribute="trailing" constant="12" id="iRe-29-TDz"/>
                             <constraint firstItem="YoP-FA-UYx" firstAttribute="top" secondItem="BdV-ro-1Tk" secondAttribute="bottom" constant="46" id="jjH-cn-Fx1"/>
                             <constraint firstItem="HTE-nS-uqd" firstAttribute="top" secondItem="hYt-kX-HtG" secondAttribute="bottom" constant="8" id="oU4-m5-d5e"/>
                             <constraint firstItem="wex-sJ-rGs" firstAttribute="leading" secondItem="elJ-LV-DV7" secondAttribute="leadingMargin" constant="10" id="pRN-FX-12d"/>
                             <constraint firstItem="cTg-Ig-afH" firstAttribute="top" secondItem="p7p-4O-Gtr" secondAttribute="bottom" constant="8" id="rhv-ck-y2M"/>
+                            <constraint firstItem="lJh-of-EKh" firstAttribute="top" secondItem="Zsr-rV-kap" secondAttribute="bottom" constant="18" id="sCQ-Dj-nUY"/>
                             <constraint firstItem="p7p-4O-Gtr" firstAttribute="top" secondItem="HTE-nS-uqd" secondAttribute="bottom" constant="8" id="thf-km-WeN"/>
+                            <constraint firstItem="lJh-of-EKh" firstAttribute="leading" secondItem="4BY-DK-mAq" secondAttribute="trailing" constant="12" id="vB4-IR-8la"/>
                             <constraint firstItem="NCJ-gJ-6cd" firstAttribute="top" secondItem="cTg-Ig-afH" secondAttribute="bottom" constant="8" id="xqp-V0-7gI"/>
                             <constraint firstItem="HNL-DV-uOk" firstAttribute="leading" secondItem="elJ-LV-DV7" secondAttribute="leadingMargin" constant="10" id="ypL-oA-drB"/>
                             <constraint firstItem="jZo-db-mfh" firstAttribute="leading" secondItem="elJ-LV-DV7" secondAttribute="leading" constant="16" id="zsh-Gk-6O7"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="xqp-V0-7gI"/>
+                            </mask>
+                        </variation>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="btnStartStop" destination="NCJ-gJ-6cd" id="Kpi-5a-Rdv"/>
                         <outlet property="lblBatteryLevel" destination="YoP-FA-UYx" id="9VM-Zf-FxJ"/>
                         <outlet property="lblConfigResult" destination="cTg-Ig-afH" id="Otx-Qj-EVf"/>
+                        <outlet property="lblScanBeaconsMode" destination="Zsr-rV-kap" id="PQq-of-auD"/>
+                        <outlet property="lblScanDuplicateBeacons" destination="lJh-of-EKh" id="2gL-A9-OJh"/>
                         <outlet property="lblScanStatus" destination="jZo-db-mfh" id="6E5-Nf-cgX"/>
+                        <outlet property="lblScanWholeInterval" destination="XPr-W3-08u" id="ico-cE-aDM"/>
+                        <outlet property="switchScanBeaconsMode" destination="eo7-pe-dIG" id="aJu-hx-wtt"/>
+                        <outlet property="switchScanDuplicateBeacons" destination="4BY-DK-mAq" id="kyz-3t-fKj"/>
+                        <outlet property="switchScanWholeInterval" destination="aEY-4Q-SHe" id="ckB-zR-owh"/>
                         <outlet property="tfBatteryStop" destination="p7p-4O-Gtr" id="tBl-tb-zK8"/>
                         <outlet property="tfDuty" destination="HTE-nS-uqd" id="9Zr-4l-YUk"/>
                         <outlet property="tfInterval" destination="hYt-kX-HtG" id="orl-vP-pwy"/>

@@ -17,5 +17,11 @@
 @property (nonatomic, weak) IBOutlet UITextField *tfDuty;
 @property (nonatomic, weak) IBOutlet UITextField *tfBatteryStop;
 @property (nonatomic, weak) IBOutlet UIButton *btnStartStop;
+@property (nonatomic, weak) IBOutlet UILabel *lblScanWholeInterval;
+@property (nonatomic, weak) IBOutlet UILabel *lblScanBeaconsMode;
+@property (nonatomic, weak) IBOutlet UILabel *lblScanDuplicateBeacons;
+@property (nonatomic, weak) IBOutlet UISwitch *switchScanWholeInterval;
+@property (nonatomic, weak) IBOutlet UISwitch *switchScanBeaconsMode;
+@property (nonatomic, weak) IBOutlet UISwitch *switchScanDuplicateBeacons;
 
 @end
