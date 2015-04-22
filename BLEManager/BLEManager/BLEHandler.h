@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
+#import <CoreLocation/CoreLocation.h>
 
-@interface BLEHandler : NSObject<CBCentralManagerDelegate>
+@interface BLEHandler : NSObject<CBCentralManagerDelegate, CLLocationManagerDelegate>
+
+@property (nonatomic, weak) id tweak;
 
 @end

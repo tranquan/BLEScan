@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		BA3681991AA2D52F004A794F /* BLEHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BA3681981AA2D52F004A794F /* BLEHandler.m */; };
+		BA6C4C491AE614B60041C2ED /* BLEScanVC.m in Sources */ = {isa = PBXBuildFile; fileRef = BA6C4C481AE614B60041C2ED /* BLEScanVC.m */; };
 		BA7238131AA2177500DEA3DD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA7238121AA2177500DEA3DD /* main.m */; };
 		BA7238161AA2177500DEA3DD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BA7238151AA2177500DEA3DD /* AppDelegate.m */; };
 		BA7238191AA2177500DEA3DD /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BA7238181AA2177500DEA3DD /* ViewController.m */; };
@@ -31,6 +32,8 @@
 /* Begin PBXFileReference section */
 		BA3681971AA2D52F004A794F /* BLEHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEHandler.h; sourceTree = "<group>"; };
 		BA3681981AA2D52F004A794F /* BLEHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLEHandler.m; sourceTree = "<group>"; };
+		BA6C4C471AE614B60041C2ED /* BLEScanVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEScanVC.h; sourceTree = "<group>"; };
+		BA6C4C481AE614B60041C2ED /* BLEScanVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLEScanVC.m; sourceTree = "<group>"; };
 		BA72380D1AA2177500DEA3DD /* BLEManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BLEManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA7238111AA2177500DEA3DD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA7238121AA2177500DEA3DD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -94,12 +97,14 @@
 				BA7238151AA2177500DEA3DD /* AppDelegate.m */,
 				BA7238171AA2177500DEA3DD /* ViewController.h */,
 				BA7238181AA2177500DEA3DD /* ViewController.m */,
+				BA6C4C471AE614B60041C2ED /* BLEScanVC.h */,
+				BA6C4C481AE614B60041C2ED /* BLEScanVC.m */,
+				BA3681971AA2D52F004A794F /* BLEHandler.h */,
+				BA3681981AA2D52F004A794F /* BLEHandler.m */,
 				BA72381A1AA2177500DEA3DD /* Main.storyboard */,
 				BA72381D1AA2177500DEA3DD /* Images.xcassets */,
 				BA72381F1AA2177500DEA3DD /* LaunchScreen.xib */,
 				BA7238101AA2177500DEA3DD /* Supporting Files */,
-				BA3681971AA2D52F004A794F /* BLEHandler.h */,
-				BA3681981AA2D52F004A794F /* BLEHandler.m */,
 			);
 			path = BLEManager;
 			sourceTree = "<group>";
@@ -244,6 +249,7 @@
 				BA7238191AA2177500DEA3DD /* ViewController.m in Sources */,
 				BA7238161AA2177500DEA3DD /* AppDelegate.m in Sources */,
 				BA7238131AA2177500DEA3DD /* main.m in Sources */,
+				BA6C4C491AE614B60041C2ED /* BLEScanVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,7 +374,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.1.sdk/System/Library/PrivateFrameworks;
+				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/System/Library/PrivateFrameworks;
 				INFOPLIST_FILE = BLEManager/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -385,7 +391,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.1.sdk/System/Library/PrivateFrameworks;
+				FRAMEWORK_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/System/Library/PrivateFrameworks;
 				INFOPLIST_FILE = BLEManager/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
