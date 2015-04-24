@@ -16,7 +16,6 @@
 		BA72381E1AA2177500DEA3DD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA72381D1AA2177500DEA3DD /* Images.xcassets */; };
 		BA7238211AA2177500DEA3DD /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA72381F1AA2177500DEA3DD /* LaunchScreen.xib */; };
 		BA72382D1AA2177500DEA3DD /* BLEManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BA72382C1AA2177500DEA3DD /* BLEManagerTests.m */; };
-		BA7238391AA2673400DEA3DD /* librocketbootstrap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA7238381AA2673400DEA3DD /* librocketbootstrap.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,9 +46,6 @@
 		BA7238261AA2177500DEA3DD /* BLEManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BLEManagerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA72382B1AA2177500DEA3DD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA72382C1AA2177500DEA3DD /* BLEManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BLEManagerTests.m; sourceTree = "<group>"; };
-		BA7238361AA25C3700DEA3DD /* bootstrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bootstrap.h; sourceTree = "<group>"; };
-		BA7238371AA25C3700DEA3DD /* rocketbootstrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rocketbootstrap.h; sourceTree = "<group>"; };
-		BA7238381AA2673400DEA3DD /* librocketbootstrap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = librocketbootstrap.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +53,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA7238391AA2673400DEA3DD /* librocketbootstrap.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +87,6 @@
 		BA72380F1AA2177500DEA3DD /* BLEManager */ = {
 			isa = PBXGroup;
 			children = (
-				BA72383A1AA2682900DEA3DD /* rocketboostrap */,
 				BA7238141AA2177500DEA3DD /* AppDelegate.h */,
 				BA7238151AA2177500DEA3DD /* AppDelegate.m */,
 				BA7238171AA2177500DEA3DD /* ViewController.h */,
@@ -133,16 +127,6 @@
 				BA72382B1AA2177500DEA3DD /* Info.plist */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		BA72383A1AA2682900DEA3DD /* rocketboostrap */ = {
-			isa = PBXGroup;
-			children = (
-				BA7238381AA2673400DEA3DD /* librocketbootstrap.dylib */,
-				BA7238361AA25C3700DEA3DD /* bootstrap.h */,
-				BA7238371AA25C3700DEA3DD /* rocketbootstrap.h */,
-			);
-			name = rocketboostrap;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

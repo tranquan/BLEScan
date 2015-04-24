@@ -10,7 +10,10 @@
 #import "ViewController.h"
 #import <AppSupport/CPDistributedMessagingCenter.h>
 #import <objc/runtime.h>
-#import "rocketbootstrap.h"
+
+#include <dlfcn.h>
+
+typedef void(*my_rocketbootstrap_distributedmessagingcenter_apply)(CPDistributedMessagingCenter *messaging_center);
 
 @interface ViewController () {
     int _isRunning;
@@ -34,11 +37,18 @@
     _duty = 0;
     _dutyTime = 0;
     _sleepTime = 0;
-    _messagingCenter = [objc_getClass("CPDistributedMessagingCenter") centerNamed:@"com.kenji.blescan.notif"];
-    if (_messagingCenter) {
-        rocketbootstrap_distributedmessagingcenter_apply(_messagingCenter);
-    }
     
+    // lazy load method
+    void *lib = dlopen("/var/lib/rocketboostrap.dylib", RTLD_LAZY);
+    if (lib != NULL) {
+        my_rocketbootstrap_distributedmessagingcenter_apply function = dlsym(lib, "rocketbootstrap_distributedmessagingcenter_apply");
+        _messagingCenter = [objc_getClass("CPDistributedMessagingCenter") centerNamed:@"com.kenji.blescan.notif"];
+        if (_messagingCenter) {
+            function(_messagingCenter);
+        }
+    }
+    dlclose(lib);
+
     [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];

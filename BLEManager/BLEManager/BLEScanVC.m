@@ -10,7 +10,13 @@
 #import "BLEScanVC.h"
 #import <CoreBluetooth/CoreBluetooth.h>
 
-#define IS_WRITE_SCAN_INFO 0
+//#define DEBUG_MODE
+
+#ifdef DEBUG_MODE
+#   define DLog(fmt, ...) NSLog((@"%s", fmt), __PRETTY_FUNCTION__, ##__VA_ARGS__)
+#else
+#   define DLog(...)
+#endif
 
 static NSDateFormatter *DateFormatter;
 
@@ -21,9 +27,9 @@ static NSDateFormatter *DateFormatter;
     float _duty;
     float _dutyTime;
     float _sleepTime;
-    BOOL _isScanAllInterval;    // YES: don't idle, scan whole time. NO: scan & idle
-    BOOL _isScanBeaconsMode;    // YES: scan for detect beacons, not log battery. NO: scan & log battery changes
-    BOOL _isScanDuplicateBeacons;// YES: log for duplicate beacons. NO: not allow duplicate until scan complete
+    BOOL _isScanAllInterval;        // YES: don't idle, scan whole time. NO: scan & idle
+    BOOL _isScanBeaconsMode;        // YES: scan for detect beacons, not log battery. NO: scan & log battery changes
+    BOOL _isScanDuplicateBeacons;   // YES: log for duplicate beacons. NO: not allow duplicate until scan complete
     
     float _batteryDropToStop;
     float _batteryAtStart;
@@ -39,6 +45,8 @@ static NSDateFormatter *DateFormatter;
     
     NSTimer *_updateTimer;
     NSDate *_timeScan;
+    
+    NSMutableDictionary *_beaconsCached;
 }
 
 @property (nonatomic, strong) CBCentralManager *bleManager;
@@ -54,6 +62,7 @@ static NSDateFormatter *DateFormatter;
     _duty = 0;
     _dutyTime = 0;
     _sleepTime = 0;
+    _beaconsCached = [[NSMutableDictionary alloc] init];
     
     if (DateFormatter == nil) {
         DateFormatter = [[NSDateFormatter alloc] init];
@@ -134,6 +143,9 @@ static NSDateFormatter *DateFormatter;
         
         [self.lblScanStatus setText:@"scanning..."];
         [self.btnStartStop setTitle:@"Stop" forState:UIControlStateNormal];
+        
+        // monitor battery drop to stop scaning process
+        [self performSelector:@selector(myBatteryMonitor) withObject:nil afterDelay:1];
     }
     else {
         _isRunning = 0;
@@ -186,22 +198,8 @@ static NSDateFormatter *DateFormatter;
     NSString *curtime = [DateFormatter stringFromDate:[NSDate date]];
     CGFloat battery = [[UIDevice currentDevice] batteryLevel] * 100;
     
-    // check if battery drop enough to stop
-    if (fabs(_batteryAtStart - battery) >= _batteryDropToStop) {
-        _isRunning = 0;
-        _stopTime = [NSDate date];
-        
-        [self.lblScanStatus setText:@"stop"];
-        [self myCloseLogFile];
-        [self.bleManager stopScan];
-        return;
-    }
-    
     // log scan time
-    if (_isScanBeaconsMode) {
-        [self myWriteLogToFile:@"\n"];
-    }
-    else {
+    if (_isScanBeaconsMode == false) {
         _currBatteryLevel = battery;
         if (fabsf(_prevBatteryLevel - _currBatteryLevel) >= 1.0) {
             _prevBatteryLevel = _currBatteryLevel;
@@ -211,7 +209,7 @@ static NSDateFormatter *DateFormatter;
     }
     
     // do scan
-//    NSLog(@"start bluetooth scan at time: %@ with battery level: %f", curtime, battery);
+    DLog(@"start bluetooth scan at time: %@ with battery level: %f", curtime, battery);
     if (_dutyTime > 1.0 && _sleepTime > 1.0) {
         [self.lblScanStatus setText:@"scanning..."];
     }
@@ -242,7 +240,7 @@ static NSDateFormatter *DateFormatter;
     }
     
     // stop scan
-//    NSLog(@"stop bluetooth scan");
+    DLog(@"stop bluetooth scan");
     if (_dutyTime > 1.0 && _sleepTime > 1.0) {
         [self.lblScanStatus setText:@"idle..."];
     }
@@ -253,6 +251,22 @@ static NSDateFormatter *DateFormatter;
         _startPendings++;
         [self performSelector:@selector(myBLEStartScan) withObject:nil afterDelay:_sleepTime];
     }
+}
+
+- (void)myBatteryMonitor {
+    if (_isRunning == 0) return;
+    CGFloat battery = [[UIDevice currentDevice] batteryLevel] * 100;
+    if (_isScanBeaconsMode == false) {
+        if (fabs(_batteryAtStart - battery) >= _batteryDropToStop) {
+            _isRunning = 0;
+            _stopTime = [NSDate date];
+            [self.lblScanStatus setText:@"stop"];
+            [self myCloseLogFile];
+            [self.bleManager stopScan];
+            return;
+        }
+    }
+    [self performSelector:@selector(myBatteryMonitor) withObject:nil afterDelay:1];
 }
 
 - (void)myOpenLogFile {
@@ -316,19 +330,19 @@ static NSDateFormatter *DateFormatter;
     if ([central state] == CBCentralManagerStatePoweredOff) {
         // all peripheral objects that have been obtained from the central
         // become invalid and must be re-discover
-//        NSLog(@"BLESCAN: CoreBluetooth BLE hardware is powered off");
+        DLog(@"BLESCAN: CoreBluetooth BLE hardware is powered off");
     }
     else if ([central state] == CBCentralManagerStatePoweredOn) {
-//        NSLog(@"BLESCAN: CoreBluetooth BLE hardware is powered on and ready");
+        DLog(@"BLESCAN: CoreBluetooth BLE hardware is powered on and ready");
     }
     else if ([central state] == CBCentralManagerStateUnauthorized) {
-//        NSLog(@"BLESCAN: CoreBluetooth BLE state is unauthorized");
+        DLog(@"BLESCAN: CoreBluetooth BLE state is unauthorized");
     }
     else if ([central state] == CBCentralManagerStateUnknown) {
-//        NSLog(@"BLESCAN: CoreBluetooth BLE state is unknown");
+        DLog(@"BLESCAN: CoreBluetooth BLE state is unknown");
     }
     else if ([central state] == CBCentralManagerStateUnsupported) {
-//        NSLog(@"BLESCAN: CoreBluetooth BLE hardware is unsupported on this platform");
+        DLog(@"BLESCAN: CoreBluetooth BLE hardware is unsupported on this platform");
     }
 }
 
@@ -347,10 +361,15 @@ static NSDateFormatter *DateFormatter;
     if ([localName length] > 0) {
         // only track estimote
         if ([localName isEqualToString:@"estimote"]) {
-            NSTimeInterval timestamp = [[NSDate date] timeIntervalSinceDate:_timeScan];
-//            NSLog(@"DeviceId: %@ - RSSI: %f - timestamp: %lf", [peripheral.identifier UUIDString], [RSSI floatValue], timestamp);
-            NSString *logText = [NSString stringWithFormat:@"%@,%f,%.2f\n", [peripheral.identifier UUIDString], [RSSI floatValue], (CGFloat)(timestamp * 1000)];
-            [self myWriteLogToFile:logText];
+            NSString *beaconIden = [peripheral.identifier UUIDString];
+            NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
+            NSTimeInterval lastTimeStamp = [[_beaconsCached objectForKey:beaconIden] doubleValue];
+            if (timestamp - lastTimeStamp >= 0.1) {
+                [_beaconsCached setObject:[NSNumber numberWithDouble:timestamp] forKey:beaconIden];
+                DLog(@"DeviceId: %@ - RSSI: %f - timestamp: %lf", [peripheral.identifier UUIDString], [RSSI floatValue], timestamp * 1000);
+                NSString *logText = [NSString stringWithFormat:@"%@,%f,%lf\n", beaconIden, [RSSI floatValue], timestamp * 1000];
+                [self myWriteLogToFile:logText];
+            }
         }
     }
     else {
@@ -360,7 +379,7 @@ static NSDateFormatter *DateFormatter;
 
 // called when have successfully connected to the BLE peripheral
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral {
-//    NSLog(@"BLESCAN: connected to device");
+    DLog(@"BLESCAN: connected to device");
 }
 
 
